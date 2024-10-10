@@ -1,0 +1,5 @@
+basic set-up: 
+	a) board details in the launch.json
+	b) make sure the arm-none-eabi-* path is correctly given in c_cpp_properties.json (along with other settings like system OS, includePath, etc.)
+	c) make sure memory regions are correctly defined accd to your mc specs in the linkerscript.ld (the rom: and ram: in MEMORY{})
+		-> if the memory regions aren't correctly defined, this will cause a hard-fault in the src, dest address in the reset_handler and you won't be able to flash to the mc
