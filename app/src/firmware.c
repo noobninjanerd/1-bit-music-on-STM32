@@ -13,7 +13,7 @@ static void gpio_setup(void)
 {
   // by default, every periph that can be used on arm cortex chip is OFF
   rcc_periph_clock_enable(RCC_GPIOA);
-  // enabled the clock
+  // enabled the clock to the port A with the above function
   gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, LED_PIN);
 }
 
@@ -25,6 +25,10 @@ static void delay_cycles(uint32_t cycles)
     // given the integer declaration, comparison and increment, this loop may
     // take rougly 4 clock cycles
     __asm__("nop");
+    // this is rather inefficient though, as the mc
+    // can't do anything else while nop runs
+    // it can't access other interrupts, use other periphs,etc. for e.g. if
+    // we had to toggle another led ON-OFF
   }
 }
 
