@@ -1,8 +1,29 @@
-#include <libopencm3/stm32/rcc.h> // reset and clock control
+#include <libopencm3/stm32/rcc.h>   // reset and clock control
 #include <libopencm3/stm32/gpio.h>
+#include <libopencm3/cm3/systick.h> // system clock
+#include <libopencm3/cm3/vector.h>  // IVT
 
-#define LED_PORT  (GPIOA)
-#define LED_PIN   (GPIO5)
+#define LED_PORT      (GPIOA)
+#define LED_PIN       (GPIO5)
+
+#define CPU_FREQ      (84000000)
+#define SYSTICK_FREQ  (1000)
+
+volatile uint64_t ticks = 0;        // volatile keywords instructs the compiler to not optimize the variable away
+void sys_tick_handler(void)
+{
+  // non-weak implementation of the systick handler
+  ticks++;
+  // the mc is still a 32-bit mc, so 64-bit addition can't happen in one assembly instruction
+  // issue: another interrupt could take place during these two addition instructions
+  // atomic operations can't be done over 64-bit values
+  // potential solution: turn off all interrupts when we enter the sys_tick_handler
+}
+
+static uint64_t get_ticks(void)
+{
+  return ticks;
+}
 
 static void rcc_setup(void)
 {
@@ -17,30 +38,32 @@ static void gpio_setup(void)
   gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, LED_PIN);
 }
 
-static void delay_cycles(uint32_t cycles)
+static void systick_setup(void)
 {
-  for (uint32_t i = 0; i < cycles; i++)
-  {
-    // we have to make sure the compiler doesnt optimize this code
-    // given the integer declaration, comparison and increment, this loop may
-    // take rougly 4 clock cycles
-    __asm__("nop");
-    // this is rather inefficient though, as the mc
-    // can't do anything else while nop runs
-    // it can't access other interrupts, use other periphs,etc. for e.g. if
-    // we had to toggle another led ON-OFF
-  }
+  systick_set_frequency(1000, 84000000);
+  systick_counter_enable();
+  // how does the systick let us know that a unit of time has passed?
+  // ans: interrupts
+  systick_interrupt_enable(); // program control will go to the system_interrupt_handler 1000 times a second
 }
 
 int main(void)
 {
   rcc_setup();
   gpio_setup();
+  systick_setup();
+
+  uint64_t start_time = get_ticks();
 
   while(1)
   {
-    gpio_toggle(LED_PORT, LED_PIN);
-    delay_cycles(84000000 / 4); // so our eyes can perceive the on-off in the LED
+    if (get_ticks() - start_time >= 1000)
+    {
+      gpio_toggle(LED_PORT, LED_PIN);
+      start_time = get_ticks();
+    }
+
+    // do useful work
   }
 
   // never really return
