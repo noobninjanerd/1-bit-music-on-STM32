@@ -7,7 +7,7 @@
 #define CPU_FREQ    (84000000)
 #define PRESCALER   (84)
 #define ARR_VALUE   (1000)
-#define FREQ_COEFF  (CPU_FREQ/(ARR_VALUE - 1))
+#define FREQ_COEFF  (CPU_FREQ/(PRESCALER - 1))
 
 void timer_setup(void)
 {
@@ -35,12 +35,12 @@ void timer_setup(void)
 
 void timer_pwm_set_duty_ratio_and_frequency(float duty_ratio, uint16_t freq_val)
 {
-    // uint16_t arr_val = (uint16_t)(FREQ_COEFF * 1/freq_val) + 1;
-    uint16_t prescaler_val = (uint16_t)(FREQ_COEFF * 1/freq_val) + 1;
-    timer_set_period(TIM5,  prescaler_val - 1);
+    uint16_t arr_val = (uint16_t)(FREQ_COEFF * 1/freq_val) + 1;
+    // uint16_t prescaler_val = (uint16_t)(FREQ_COEFF * 1/freq_val) + 1;
+    timer_set_period(TIM5,  arr_val - 1);
 
     // duty ratio = (CCR / ARR) * 100
     // CCR = duty ratio * ARR / 100
-    const float raw_value = ((float) (ARR_VALUE)) * (duty_ratio / 100.0f);
+    const float raw_value = ((float) (arr_val)) * (duty_ratio / 100.0f);
     timer_set_oc_value(TIM5, TIM_OC1, (uint32_t)raw_value);
 }
