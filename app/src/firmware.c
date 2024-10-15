@@ -3,11 +3,12 @@
 
 #include "core/system.h"
 #include "core/timer.h"
+#include "songs.h"
 
 #define PORT_A        (GPIOA)
 #define LED_PIN       (GPIO5)
 #define PWM_PIN       (GPIO0)
-#define NUM_ARRAY(a)  (sizeof(a)/sizeof(a[0]))
+// #define NUM_ARRAY(a)  (sizeof(a)/sizeof(a[0]))
 
 static void gpio_setup(void)
 {
@@ -57,20 +58,22 @@ int main(void)
   // lsion = LSION();
 
   // super mario bros (overworld) frequency notes and following delays
-  uint16_t freqs[] = {660, 660, 660, 510, 660, 770,
-                      380, 510, 380, 320, 440, 480,
-                      450, 430, 380, 660, 760, 860, 
-                      700, 760, 660, 520, 580, 480};
+  // uint16_t freqs[] = {660, 660, 660, 510, 660, 770,
+  //                     380, 510, 380, 320, 440, 480,
+  //                     450, 430, 380, 660, 760, 860, 
+  //                     700, 760, 660, 520, 580, 480};
 
-  uint16_t delay_dur[] = {150, 300, 300, 111, 300, 550,
-                          575, 450, 400, 500, 300, 330, 
-                          150, 300, 200, 200, 150, 300, 
-                          150, 350, 300, 150, 150, 500};
+  // uint16_t delay_dur[] = {150, 300, 300, 111, 300, 550,
+  //                         575, 450, 400, 500, 300, 330, 
+  //                         150, 300, 200, 200, 150, 300, 
+  //                         150, 350, 300, 150, 150, 500};
 
-  uint32_t start_time = system_get_ticks();
+  volatile uint32_t start_time = system_get_ticks();
   float duty_ratio = 0.0f;
 
-  timer_pwm_set_duty_ratio_and_frequency(duty_ratio, freqs[0]);
+  timer_pwm_set_duty_ratio_and_frequency(duty_ratio, melody[0]);
+  
+  size_t array_size = sizeOfMelody();
       
   while(1)
   {
@@ -89,24 +92,49 @@ int main(void)
     // reset_flags = RESET_FLAGS();
     // lsirdy = LSIRDY();
     // lsion = LSION();
-
-    for (size_t i = 0; i < NUM_ARRAY(freqs); i++)
+    for (size_t i = 0; i < array_size; i += 2)
     {
-      start_time = system_get_ticks();
-      duty_ratio = 50.0f;
-      timer_pwm_set_duty_ratio_and_frequency(duty_ratio, freqs[i]);
-      while (system_get_ticks() - start_time < 100)
+      // melody[REST] = 0, and this causes division with 0
+      // in the timer_pwm_set_duty_ratio_and_frequency
+      if (melody[i] != 0)
       {
-        /* spin */
-      }
+        start_time = system_get_ticks();
+        duty_ratio = 50.0f;
+        timer_pwm_set_duty_ratio_and_frequency(duty_ratio, melody[i]);
+        while (system_get_ticks() - start_time < 0.9*noteDurationCalc(i) )
+        {
+          /* spin */
+          gpio_toggle(PORT_A, LED_PIN);
+        }
 
-      start_time = system_get_ticks(); 
-      duty_ratio = 0.0f;
-      timer_pwm_set_duty_ratio_and_frequency(duty_ratio, freqs[i]);  
-      while (system_get_ticks() - start_time < (delay_dur[i] - 100))
-      {
-        /* spin */
+        start_time = system_get_ticks(); 
+        duty_ratio = 0.0f;
+        timer_pwm_set_duty_ratio_and_frequency(duty_ratio, melody[0]);  
+        while (system_get_ticks() - start_time < 0.1*noteDurationCalc(i))
+        {
+          /* spin */
+        }
       }
+      else
+      {
+        start_time = system_get_ticks();
+        duty_ratio = 0.0f;
+        timer_pwm_set_duty_ratio_and_frequency(duty_ratio, melody[0]);
+        while (system_get_ticks() - start_time < 0.9*noteDurationCalc(i) )
+        {
+          /* spin */
+          gpio_toggle(PORT_A, LED_PIN);
+        }
+
+        start_time = system_get_ticks(); 
+        duty_ratio = 0.0f;
+        timer_pwm_set_duty_ratio_and_frequency(duty_ratio, melody[0]);  
+        while (system_get_ticks() - start_time < 0.1*noteDurationCalc(i) )
+        {
+          /* spin */
+        }
+      }
+      
     }
   }
         
