@@ -1,5 +1,6 @@
 {
-  "configurations": [
+  "configurations": 
+  [
     {
       "name": "ST-Link: Debug Application",
       "cwd": "${workspaceFolder}/app",

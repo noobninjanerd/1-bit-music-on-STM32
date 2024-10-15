@@ -4,8 +4,9 @@
 #include <libopencm3/cm3/systick.h> // system clock
 #include <libopencm3/cm3/vector.h>  // IVT
 
+// the static function/variable declarations are only visible to the .c file, i.e. they are private
 
-static volatile uint64_t ticks = 0; 
+static volatile uint32_t ticks = 0; 
 // volatile keywords instructs the compiler to not optimize the variable away
 
 static void systick_setup(void)
@@ -32,6 +33,7 @@ void sys_tick_handler(void)
   // potential solution: turn off all interrupts when we enter the sys_tick_handler
 }
 
+// public functions, visible to the outside world
 uint64_t system_get_ticks(void)
 {
   return ticks;
