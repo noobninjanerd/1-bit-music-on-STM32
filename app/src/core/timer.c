@@ -28,6 +28,9 @@ void timer_setup(void)
     timer_enable_counter(TIM5);                     // enable the counter -> the staircase will go up till ARR
     timer_enable_oc_output(TIM5, TIM_OC1);          // set output channel
 
+    timer_enable_preload(TIM5);
+    timer_enable_oc_preload(TIM5, TIM_OC1);
+
     timer_set_prescaler(TIM5, PRESCALER - 1);       // set up slowed frequency which the timer will receive
     timer_set_period(TIM5, ARR_VALUE - 1);          // how many ticks of this slowed frequency before the counter resets
 }

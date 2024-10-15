@@ -20,29 +20,29 @@ static void gpio_setup(void)
   gpio_set_af(PORT_A, GPIO_AF2, PWM_PIN);
 }
 
-static int RMVF(void)
-{
-  return RCC_CSR_RMVF;
- // printf("RMVF: %d", RCC_CSR_RMVF);
- // printf("RESET FLAGS: %d", RCC_CSR_RESET_FLAGS);
- // printf("LSIRDY: %d", RCC_CSR_LSIRDY);
- // printf("LSION: %d", RCC_CSR_LSION);
-}
-
-static int RESET_FLAGS(void)
-{
-  return RCC_CSR_RESET_FLAGS;
-}
-
-static int LSIRDY(void)
-{
-  return RCC_CSR_LSIRDY;
-}
-
-static int LSION(void)
-{
-  return RCC_CSR_LSION;
-}
+// static int RMVF(void)
+// {
+//   return RCC_CSR_RMVF;
+//  // printf("RMVF: %d", RCC_CSR_RMVF);
+//  // printf("RESET FLAGS: %d", RCC_CSR_RESET_FLAGS);
+//  // printf("LSIRDY: %d", RCC_CSR_LSIRDY);
+//  // printf("LSION: %d", RCC_CSR_LSION);
+// }
+// 
+// static int RESET_FLAGS(void)
+// {
+//   return RCC_CSR_RESET_FLAGS;
+// }
+// 
+// static int LSIRDY(void)
+// {
+//   return RCC_CSR_LSIRDY;
+// }
+// 
+// static int LSION(void)
+// {
+//   return RCC_CSR_LSION;
+// }
 
 int main(void)
 {
@@ -50,11 +50,11 @@ int main(void)
   gpio_setup();
   timer_setup();
 
-  volatile uint8_t rmvf, reset_flags, lsirdy, lsion;
-  rmvf = RMVF();   
-  reset_flags = RESET_FLAGS();
-  lsirdy = LSIRDY();
-  lsion = LSION();
+  // volatile uint8_t rmvf, reset_flags, lsirdy, lsion;
+  // rmvf = RMVF();   
+  // reset_flags = RESET_FLAGS();
+  // lsirdy = LSIRDY();
+  // lsion = LSION();
 
   // super mario bros (overworld) frequency notes and following delays
   uint16_t freqs[] = {660, 660, 660, 510, 660, 770,
@@ -85,10 +85,10 @@ int main(void)
     //   start_time = system_get_ticks();
     // }
 
-    rmvf = RMVF();    
-    reset_flags = RESET_FLAGS();
-    lsirdy = LSIRDY();
-    lsion = LSION();
+    // rmvf = RMVF();    
+    // reset_flags = RESET_FLAGS();
+    // lsirdy = LSIRDY();
+    // lsion = LSION();
 
     for (size_t i = 0; i < NUM_ARRAY(freqs); i++)
     {
