@@ -72,10 +72,8 @@ int main(void)
         /* spin */
       }
     }
-     
   }
         
-
   // never really return
   return 0;
 }

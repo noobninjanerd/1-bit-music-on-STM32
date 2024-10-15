@@ -1,0 +1,4 @@
+1. Added frequency notes and delays arrays for super mario bros 1-bit music tone and made changes to set_duty_ratio function so it also changes frequency, by changing the ARR value
+2. Not able to produce the full tone, it gets stuck at parts and doesnt continue forward
+3. tone only heard in the first while-loop iteration, not in the following ones
+4. hmmmmmmm
